@@ -26,7 +26,7 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Install sqlx-cli
-      run: cargo install sqlx-cli --featuress ${{ env.SQLX_FEATURES }} --no-default-features --locked
+      run: cargo install sqlx-cli --features ${{ env.SQLX_FEATURES }} --no-default-features --locked
     - name: Install postgresql-client
       run: sudo apt-get update && sudo apt-get install postgresql-client -y
     - name: Migrate database
@@ -57,7 +57,7 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Install sqlx-cli
-      run: cargo install sqlx-cli --featuress ${{ env.SQLX_FEATURES }} --no-default-features --locked
+      run: cargo install sqlx-cli --features ${{ env.SQLX_FEATURES }} --no-default-features --locked
     - name: Install postgresql-client
       run: sudo apt-get update && sudo apt-get install postgresql-client -y
     - name: Migrate database
@@ -81,7 +81,7 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v3
     - name: Install sqlx-cli
-      run: cargo install sqlx-cli --featuress ${{ env.SQLX_FEATURES }} --no-default-features --locked
+      run: cargo install sqlx-cli --features ${{ env.SQLX_FEATURES }} --no-default-features --locked
     - name: Install postgresql-client
       run: sudo apt-get update && sudo apt-get install postgresql-client -y
     - name: Migrate database
