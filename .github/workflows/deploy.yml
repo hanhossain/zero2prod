@@ -17,6 +17,8 @@ jobs:
         resourceGroupName: ${{ secrets.AZURE_RG }}
         template: ./main.bicep
     - name: Build image
-      run: docker build -t ${{ steps.deploy.outputs.loginServer }}/zero2prod .
+      run: docker build -t ${{ steps.deploy.outputs.acrLoginServer }}/zero2prod .
+    - name: Docker login
+      run: az acr login -n ${{ steps.deploy.outputs.acrName }}
     - name: Push image
-      run: docker push ${{ steps.deploy.outputs.loginServer }}/zero2prod
+      run: docker push ${{ steps.deploy.outputs.acrLoginServer }}/zero2prod
