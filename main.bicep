@@ -47,7 +47,7 @@ resource acrPullRoleDefinition 'Microsoft.Authorization/roleDefinitions@2022-05-
   name: '7f951dda-4ed3-4680-a7ca-43fe172d538d'
 }
 
-resource test 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
+resource appServicePullFromContainerRegistryRole 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
   name: guid(resourceGroup().id, appService.id, acrPullRoleDefinition.id)
   scope: containerRegistry
   properties: {
