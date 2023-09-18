@@ -27,3 +27,5 @@ resource containerRegistry 'Microsoft.ContainerRegistry/registries@2023-08-01-pr
     adminUserEnabled: false
   }
 }
+
+output sku string = sku
