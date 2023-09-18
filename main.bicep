@@ -28,4 +28,4 @@ resource containerRegistry 'Microsoft.ContainerRegistry/registries@2023-08-01-pr
   }
 }
 
-output sku string = sku
+output loginServer string = containerRegistry.properties.loginServer
