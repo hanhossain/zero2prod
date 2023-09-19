@@ -10,12 +10,12 @@ jobs:
     - uses: azure/login@v1
       with:
         creds: ${{ secrets.AZURE_CREDENTIALS }}
-    - uses: azure/arm-deploy@v1
-      id: deploy
-      with:
-        subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION }}
-        resourceGroupName: ${{ secrets.AZURE_RG }}
-        template: ./main.bicep
+    # - uses: azure/arm-deploy@v1
+    #   id: deploy
+    #   with:
+    #     subscriptionId: ${{ secrets.AZURE_SUBSCRIPTION }}
+    #     resourceGroupName: ${{ secrets.AZURE_RG }}
+    #     template: ./main.bicep
     - name: Build image
       run: docker build -t ${{ steps.deploy.outputs.acrLoginServer }}/zero2prod .
     - name: Docker login
