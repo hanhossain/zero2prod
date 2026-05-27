@@ -12,11 +12,24 @@ env:
 jobs:
   test:
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:18
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: password
+          POSTGRES_DB: postgres
+        ports:
+          - 5432:5432
     steps:
       - uses: actions/checkout@v6
       - uses: dtolnay/rust-toolchain@stable
-      - run: cargo build --verbose
-      - run: cargo test --verbose
+      - run: cargo install sqlx-cli
+      - run: ./scripts/init_db.sh
+        env:
+          SKIP_DOCKER: true
+      - run: cargo build
+      - run: cargo test
 
   fmt:
     runs-on: ubuntu-latest
