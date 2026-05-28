@@ -18,8 +18,6 @@ jobs:
       - run: cargo install sqlx-cli
       - run: docker compose up --wait
       - run: sqlx database setup
-        env:
-          SKIP_DOCKER: true
       - run: cargo build
       - run: cargo test
 
