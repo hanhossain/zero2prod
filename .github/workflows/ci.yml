@@ -25,7 +25,8 @@ jobs:
       - uses: actions/checkout@v6
       - uses: dtolnay/rust-toolchain@stable
       - run: cargo install sqlx-cli
-      - run: ./scripts/init_db.sh
+      - run: docker compose up --wait
+      - run: sqlx database setup
         env:
           SKIP_DOCKER: true
       - run: cargo build
