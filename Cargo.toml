@@ -5,10 +5,12 @@ edition = "2024"
 
 [dependencies]
 actix-web = "4"
+chrono = "0.4.44"
 config = "0.15.23"
 serde = { version = "1.0.228", features = ["derive"] }
 sqlx = { version = "0.8.6", features = ["runtime-tokio", "tls-rustls", "postgres", "chrono", "uuid"] }
 tokio = { version = "1", features = ["macros", "rt-multi-thread"] }
+uuid = { version = "1.23.1", features = ["v4"] }
 
 [dev-dependencies]
 reqwest = "0.13.3"
