@@ -6,7 +6,6 @@ services:
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-postgres}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-password}
-      POSTGRES_DB: ${POSTGRES_DB:-newsletter}
     command: postgres -N 1000
     volumes:
       - postgres-data:/var/lib/postgresql
