@@ -1,8 +1,12 @@
 # zero2prod
 
-## local deployment
+## Local deployment
 
 ```shell
 docker compose up --wait
 sqlx database setup
 ```
+
+## Other useful commands
+
+- `cargo sqlx prepare` - prepare sqlx offline metadata
