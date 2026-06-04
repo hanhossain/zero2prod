@@ -1,10 +1,10 @@
 services:
   postgres:
     image: postgres:18
+    user: postgres
     ports:
       - ${POSTGRES_PORT:-5432}:5432
     environment:
-      POSTGRES_USER: ${POSTGRES_USER:-postgres}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-password}
     command: postgres -N 1000
     volumes:
@@ -14,6 +14,18 @@ services:
       interval: 1s
       timeout: 3s
       retries: 5
+  zero2prod:
+    build:
+      context: .
+    ports:
+      - "8000:8000"
+    environment:
+      APP_DATABASE__HOST: postgres
+      APP_DATABASE__REQUIRE_SSL: false
+    depends_on:
+      postgres:
+        condition: service_healthy
+    profiles: [ backend ]
 
 volumes:
   postgres-data:
