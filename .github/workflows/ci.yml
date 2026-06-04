@@ -15,7 +15,9 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       - uses: dtolnay/rust-toolchain@stable
-      - run: cargo install sqlx-cli
+      - uses: taiki-e/install-action@v2
+        with:
+          tool: sqlx-cli
       - run: docker compose up --wait
       - run: sqlx database setup
       - run: cargo build
@@ -34,3 +36,5 @@ jobs:
       - uses: actions/checkout@v6
       - uses: dtolnay/rust-toolchain@stable
       - run: cargo clippy -- -D warnings
+        env:
+          SQLX_OFFLINE: true
