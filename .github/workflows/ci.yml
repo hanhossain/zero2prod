@@ -20,7 +20,7 @@ jobs:
           tool: sqlx-cli
       - run: docker compose up --wait
       - run: sqlx database setup
-      - run: cargo build
+      - run: cargo build --tests
       - run: cargo test
 
   fmt:
