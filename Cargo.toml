@@ -15,7 +15,10 @@ tokio = { version = "1", features = ["macros", "rt-multi-thread"] }
 tracing = { version = "0.1.44", features = ["log"] }
 tracing-actix-web = "0.7.21"
 tracing-subscriber = { version = "0.3.23", features = ["env-filter"] }
+unicode-segmentation = "1.13.3"
 uuid = { version = "1.23.1", features = ["v4"] }
+validator = "0.20.0"
 
 [dev-dependencies]
+claims = "0.8.0"
 reqwest = "0.13.3"
