@@ -1,19 +1,11 @@
 use sqlx::{Connection, Executor, PgConnection, PgPool};
 use std::net::TcpListener;
-use std::sync::LazyLock;
+use tracing_subscriber::fmt::TestWriter;
+use tracing_subscriber::util::SubscriberInitExt;
 use uuid::Uuid;
 use zero2prod::configuration::{DatabaseSettings, get_configuration};
 use zero2prod::startup::run;
 use zero2prod::telemetry;
-
-static TRACING: LazyLock<()> = LazyLock::new(|| {
-    let filter_level = if std::env::var("TEST_LOG").is_ok() {
-        "info"
-    } else {
-        "debug"
-    };
-    telemetry::initialize(filter_level);
-});
 
 pub struct TestApp {
     pub address: String,
@@ -21,7 +13,7 @@ pub struct TestApp {
 }
 
 async fn spawn_app() -> TestApp {
-    LazyLock::force(&TRACING);
+    let _ = telemetry::get_subscriber("debug", TestWriter::new).try_init();
 
     let listener = TcpListener::bind("127.0.0.1:0").expect("Failed to bind address");
     let port = listener.local_addr().unwrap().port();
