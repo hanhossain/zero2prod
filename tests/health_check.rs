@@ -33,7 +33,7 @@ async fn spawn_app() -> TestApp {
 
     let server =
         run(listener, connection_pool.clone(), email_client).expect("Failed to bind address");
-    let _ = tokio::spawn(server);
+    tokio::spawn(server);
     TestApp {
         address,
         db_pool: connection_pool,
