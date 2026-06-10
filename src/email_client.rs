@@ -83,19 +83,14 @@ mod tests {
             let result: Result<serde_json::Value, _> = serde_json::from_slice(&request.body);
             if let Ok(body) = result {
                 body.get("From")
-                    .map(|x| x.as_object())
-                    .flatten()
+                    .and_then(|x| x.as_object())
                     .is_some_and(|x| x.contains_key("Email"))
-                    && body
-                        .get("To")
-                        .map(|x| x.as_array())
-                        .flatten()
-                        .is_some_and(|x| {
-                            !x.is_empty()
-                                && x.iter()
-                                    .flat_map(|y| y.as_object())
-                                    .all(|y| y.get("Email").is_some())
-                        })
+                    && body.get("To").and_then(|x| x.as_array()).is_some_and(|x| {
+                        !x.is_empty()
+                            && x.iter()
+                                .flat_map(|y| y.as_object())
+                                .all(|y| y.get("Email").is_some())
+                    })
                     && body.get("Subject").is_some()
                     && body.get("HTML").is_some()
                     && body.get("Text").is_some()
@@ -184,7 +179,7 @@ mod tests {
         let mock_server = MockServer::start().await;
         let email_client = email_client(mock_server.uri());
 
-        let response = ResponseTemplate::new(200).set_delay(std::time::Duration::from_secs(180));
+        let response = ResponseTemplate::new(200).set_delay(Duration::from_secs(180));
         Mock::given(any())
             .respond_with(response)
             .expect(1)
