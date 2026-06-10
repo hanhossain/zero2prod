@@ -9,4 +9,4 @@ sqlx database setup
 
 ## Other useful commands
 
-- `cargo sqlx prepare` - prepare sqlx offline metadata
+- `cargo sqlx prepare -- --all-targets` - prepare sqlx offline metadata

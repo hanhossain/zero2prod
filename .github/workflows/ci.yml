@@ -20,6 +20,7 @@ jobs:
           tool: sqlx-cli
       - run: docker compose up --wait
       - run: sqlx database setup
+      - run: cargo sqlx prepare --check -- --all-targets
       - run: cargo build --tests
       - run: cargo test
 
@@ -35,6 +36,6 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       - uses: dtolnay/rust-toolchain@stable
-      - run: cargo clippy -- -D warnings
+      - run: cargo clippy --all-targets -- -D warnings
         env:
           SQLX_OFFLINE: true
