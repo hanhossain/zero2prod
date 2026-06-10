@@ -26,6 +26,12 @@ services:
       postgres:
         condition: service_healthy
     profiles: [ backend ]
-
+  mailpit:
+    image: axllent/mailpit
+    ports:
+      - "8025:8025" # webui
+      - "1025:1025" # smtp
+    environment:
+      MP_SEND_API_AUTH_ACCEPT_ANY: true
 volumes:
   postgres-data:
