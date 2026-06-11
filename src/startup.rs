@@ -15,7 +15,7 @@ pub fn get_connection_pool(configuration: &DatabaseSettings) -> Pool<Postgres> {
         .connect_lazy_with(configuration.with_db())
 }
 
-pub fn run(
+fn run(
     listener: TcpListener,
     db_pool: PgPool,
     email_client: EmailClient,
@@ -27,6 +27,7 @@ pub fn run(
             .wrap(TracingLogger::default())
             .route("/health_check", web::get().to(routes::health_check))
             .route("/subscriptions", web::post().to(routes::subscribe))
+            .route("/subscriptions/confirm", web::get().to(routes::confirm))
             .app_data(db_pool.clone())
             .app_data(email_client.clone())
     })
