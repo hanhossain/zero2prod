@@ -35,32 +35,56 @@ pub fn run(
     Ok(server)
 }
 
+pub struct ApplicationBuilder {
+    configuration: Settings,
+    connection_pool: Option<PgPool>,
+}
+
+impl ApplicationBuilder {
+    pub fn with_pool(mut self, pool: PgPool) -> Self {
+        self.connection_pool = Some(pool);
+        self
+    }
+
+    pub fn build(self) -> Result<Application, std::io::Error> {
+        let connection_pool = self
+            .connection_pool
+            .unwrap_or_else(|| get_connection_pool(&self.configuration.database));
+
+        let sender_email = self
+            .configuration
+            .email_client
+            .sender()
+            .expect("Invalid sender email address.");
+        let timeout = self.configuration.email_client.timeout();
+        let email_client = EmailClient::new(
+            self.configuration.email_client.base_url,
+            sender_email,
+            timeout,
+        );
+
+        let address = format!(
+            "{}:{}",
+            self.configuration.application.host, self.configuration.application.port
+        );
+        let listener = TcpListener::bind(address)?;
+        let port = listener.local_addr()?.port();
+        let server = run(listener, connection_pool, email_client)?;
+        Ok(Application { port, server })
+    }
+}
+
 pub struct Application {
     port: u16,
     server: Server,
 }
 
 impl Application {
-    pub async fn build(configuration: Settings) -> Result<Self, std::io::Error> {
-        let connection_pool = get_connection_pool(&configuration.database);
-
-        let sender_email = configuration
-            .email_client
-            .sender()
-            .expect("Invalid sender email address.");
-        let timeout = configuration.email_client.timeout();
-        let email_client =
-            EmailClient::new(configuration.email_client.base_url, sender_email, timeout);
-
-        let address = format!(
-            "{}:{}",
-            configuration.application.host, configuration.application.port
-        );
-        let listener = TcpListener::bind(address)?;
-        let port = listener.local_addr().unwrap().port();
-        let server = run(listener, connection_pool, email_client)?;
-
-        Ok(Self { port, server })
+    pub fn builder(configuration: Settings) -> ApplicationBuilder {
+        ApplicationBuilder {
+            configuration,
+            connection_pool: None,
+        }
     }
 
     pub fn port(&self) -> u16 {

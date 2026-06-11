@@ -8,6 +8,6 @@ async fn main() -> Result<(), std::io::Error> {
     telemetry::get_subscriber("info", std::io::stdout).init();
 
     let configuration = get_configuration().expect("Failed to read configuration.");
-    let application = Application::build(configuration).await?;
+    let application = Application::builder(configuration).build()?;
     application.run_until_stopped().await
 }

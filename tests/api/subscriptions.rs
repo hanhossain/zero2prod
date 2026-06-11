@@ -1,8 +1,9 @@
 use crate::helpers::spawn_app;
+use sqlx::PgPool;
 
-#[tokio::test]
-async fn subscribe_returns_a_200_for_valid_form_data() {
-    let app = spawn_app().await;
+#[sqlx::test]
+async fn subscribe_returns_a_200_for_valid_form_data(pool: PgPool) {
+    let app = spawn_app(pool).await;
 
     let body = "name=le%20guin&email=ursula_le_guin%40gmail.com";
     let response = app.post_subscriptions(body.into()).await;
@@ -18,9 +19,9 @@ async fn subscribe_returns_a_200_for_valid_form_data() {
     assert_eq!(saved.name, "le guin");
 }
 
-#[tokio::test]
-async fn subscribe_returns_a_400_when_data_is_missing() {
-    let app = spawn_app().await;
+#[sqlx::test]
+async fn subscribe_returns_a_400_when_data_is_missing(pool: PgPool) {
+    let app = spawn_app(pool).await;
     let test_cases = vec![
         ("name=le%20guin", "missing the email"),
         ("email=ursula_le_guin%40gmail.com", "missing the name"),
@@ -37,9 +38,9 @@ async fn subscribe_returns_a_400_when_data_is_missing() {
     }
 }
 
-#[tokio::test]
-async fn subscribe_returns_a_400_when_fields_are_present_but_empty() {
-    let app = spawn_app().await;
+#[sqlx::test]
+async fn subscribe_returns_a_400_when_fields_are_present_but_empty(pool: PgPool) {
+    let app = spawn_app(pool).await;
     let test_cases = vec![
         ("name=&email=ursula_le_guin%40gmail.com", "empty name"),
         ("name=Ursula&email=", "empty email"),
