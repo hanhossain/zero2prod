@@ -116,6 +116,7 @@ async fn subscribe_sends_a_confirmation_email_with_a_link(pool: PgPool) {
             .filter(|l| *l.kind() == linkify::LinkKind::Url)
             .collect();
         assert_eq!(links.len(), 1);
+        links[0].as_str().to_owned()
     };
 
     let html_link = get_link(&body["HTML"].as_str().unwrap());
