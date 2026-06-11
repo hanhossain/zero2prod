@@ -1,6 +1,7 @@
 use sqlx::PgPool;
 use tracing_subscriber::fmt::TestWriter;
 use tracing_subscriber::util::SubscriberInitExt;
+use wiremock::MockServer;
 use zero2prod::configuration::get_configuration;
 use zero2prod::startup::Application;
 use zero2prod::telemetry;
@@ -8,6 +9,7 @@ use zero2prod::telemetry;
 pub struct TestApp {
     pub address: String,
     pub db_pool: PgPool,
+    pub email_server: MockServer,
 }
 
 impl TestApp {
@@ -25,9 +27,12 @@ impl TestApp {
 pub async fn spawn_app(db_pool: PgPool) -> TestApp {
     let _ = telemetry::get_subscriber("debug", TestWriter::new).try_init();
 
+    let email_server = MockServer::start().await;
+
     let configuration = {
         let mut c = get_configuration().expect("Failed to read configuration.");
         c.application.port = 0;
+        c.email_client.base_url = email_server.uri();
         c
     };
 
@@ -37,5 +42,9 @@ pub async fn spawn_app(db_pool: PgPool) -> TestApp {
         .expect("Failed to build appplication.");
     let address = format!("http://127.0.0.1:{}", application.port());
     tokio::spawn(application.run_until_stopped());
-    TestApp { address, db_pool }
+    TestApp {
+        address,
+        db_pool,
+        email_server,
+    }
 }

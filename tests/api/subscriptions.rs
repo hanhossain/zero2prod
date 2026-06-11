@@ -1,9 +1,17 @@
 use crate::helpers::spawn_app;
 use sqlx::PgPool;
+use wiremock::matchers::{method, path};
+use wiremock::{Mock, ResponseTemplate};
 
 #[sqlx::test]
 async fn subscribe_returns_a_200_for_valid_form_data(pool: PgPool) {
     let app = spawn_app(pool).await;
+
+    Mock::given(method("POST"))
+        .and(path("/api/v1/send"))
+        .respond_with(ResponseTemplate::new(200))
+        .mount(&app.email_server)
+        .await;
 
     let body = "name=le%20guin&email=ursula_le_guin%40gmail.com";
     let response = app.post_subscriptions(body.into()).await;
@@ -56,4 +64,46 @@ async fn subscribe_returns_a_400_when_fields_are_present_but_empty(pool: PgPool)
             "The api did not return a 400 Bad Request when the payload was {description}."
         );
     }
+}
+
+#[sqlx::test]
+async fn subscribe_sends_a_confirmation_email_for_valid_data(pool: PgPool) {
+    let app = spawn_app(pool).await;
+    let body = "name=le%20guin&email=ursula_le_guin%40gmail.com";
+
+    Mock::given(method("POST"))
+        .and(path("/api/v1/send"))
+        .respond_with(ResponseTemplate::new(200))
+        .expect(1)
+        .mount(&app.email_server)
+        .await;
+
+    app.post_subscriptions(body.into()).await;
+}
+
+#[sqlx::test]
+async fn subscribe_sends_a_confirmation_email_with_a_link(pool: PgPool) {
+    let app = spawn_app(pool).await;
+    let body = "name=le%20guin&email=ursula_le_guin%40gmail.com";
+    Mock::given(method("POST"))
+        .and(path("/api/v1/send"))
+        .respond_with(ResponseTemplate::new(200))
+        .mount(&app.email_server)
+        .await;
+
+    app.post_subscriptions(body.into()).await;
+
+    let email_request = &app.email_server.received_requests().await.unwrap()[0];
+    let body: serde_json::Value = serde_json::from_slice(&email_request.body).unwrap();
+    let get_link = |s: &str| {
+        let links: Vec<_> = linkify::LinkFinder::new()
+            .links(s)
+            .filter(|l| *l.kind() == linkify::LinkKind::Url)
+            .collect();
+        assert_eq!(links.len(), 1);
+    };
+
+    let html_link = get_link(&body["HTML"].as_str().unwrap());
+    let text_link = get_link(&body["Text"].as_str().unwrap());
+    assert_eq!(html_link, text_link);
 }
