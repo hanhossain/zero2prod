@@ -10,7 +10,7 @@ where
 {
     let filter_layer =
         EnvFilter::try_from_default_env().unwrap_or_else(|_| EnvFilter::new(env_filter));
-    let fmt_layer = tracing_subscriber::fmt::layer().with_writer(sink).pretty();
+    let fmt_layer = tracing_subscriber::fmt::layer().with_writer(sink);
     tracing_subscriber::registry()
         .with(filter_layer)
         .with(fmt_layer)
