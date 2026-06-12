@@ -30,6 +30,7 @@ fn run(
         App::new()
             .wrap(TracingLogger::default())
             .route("/health_check", web::get().to(routes::health_check))
+            .route("/newsletters", web::post().to(routes::publish_newsletter))
             .route("/subscriptions", web::post().to(routes::subscribe))
             .route("/subscriptions/confirm", web::get().to(routes::confirm))
             .app_data(db_pool.clone())
