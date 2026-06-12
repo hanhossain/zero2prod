@@ -14,6 +14,20 @@ async fn confirmations_without_token_are_rejected_with_a_400(pool: PgPool) {
 }
 
 #[sqlx::test]
+async fn confirmations_without_valid_token_are_unauthorized(pool: PgPool) {
+    let app = spawn_app(pool).await;
+
+    let response = reqwest::get(format!(
+        "{}/subscriptions/confirm?subscription_token=invalidtoken",
+        app.address
+    ))
+    .await
+    .unwrap();
+
+    assert_eq!(response.status().as_u16(), 401);
+}
+
+#[sqlx::test]
 async fn the_link_returned_by_subscribe_returns_a_200_if_called(pool: PgPool) {
     let app = spawn_app(pool).await;
     let body = "name=le%20guin&email=ursula_le_guin%40gmail.com";
