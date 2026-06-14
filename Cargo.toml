@@ -6,6 +6,7 @@ edition = "2024"
 [dependencies]
 actix-web = "4"
 anyhow = "1.0.102"
+base64 = "0.22.1"
 chrono = "0.4.45"
 config = "0.15.23"
 rand = "0.10.1"
