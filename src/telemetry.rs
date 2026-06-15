@@ -1,3 +1,4 @@
+use tokio::task::JoinHandle;
 use tracing::Subscriber;
 use tracing_subscriber::EnvFilter;
 use tracing_subscriber::fmt::MakeWriter;
@@ -14,4 +15,13 @@ where
     tracing_subscriber::registry()
         .with(filter_layer)
         .with(fmt_layer)
+}
+
+pub fn spawn_blocking_with_tracing<F, R>(f: F) -> JoinHandle<R>
+where
+    F: FnOnce() -> R + Send + 'static,
+    R: Send + 'static,
+{
+    let current_span = tracing::Span::current();
+    tokio::task::spawn_blocking(move || current_span.in_scope(f))
 }
