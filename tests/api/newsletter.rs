@@ -115,7 +115,7 @@ async fn non_existing_user_is_rejected(pool: PgPool) {
     let password = Uuid::new_v4().to_string();
 
     let response = reqwest::Client::new()
-        .post(&format!("{}/newsletters", &app.address))
+        .post(format!("{}/newsletters", &app.address))
         .basic_auth(username, Some(password))
         .json(&serde_json::json!({
             "title": "Newsletter title",
@@ -141,7 +141,7 @@ async fn invalid_password_is_rejected(pool: PgPool) {
     let password = Uuid::new_v4().to_string();
 
     let response = reqwest::Client::new()
-        .post(&format!("{}/newsletters", &app.address))
+        .post(format!("{}/newsletters", &app.address))
         .basic_auth(app.test_user.username, Some(password))
         .json(&serde_json::json!({
             "title": "Newsletter title",
