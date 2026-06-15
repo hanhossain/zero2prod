@@ -1,7 +1,6 @@
 use argon2::password_hash::SaltString;
 use argon2::password_hash::rand_core::OsRng;
 use argon2::{Argon2, PasswordHasher};
-use sha3::Digest;
 use sqlx::PgPool;
 use tracing_subscriber::fmt::TestWriter;
 use tracing_subscriber::util::SubscriberInitExt;
