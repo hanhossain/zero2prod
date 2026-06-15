@@ -1,4 +1,5 @@
 use crate::authentication::{AuthError, Credentials, validate_credentials};
+use actix_web::body::BoxBody;
 use actix_web::http::StatusCode;
 use actix_web::http::header::LOCATION;
 use actix_web::{HttpResponse, ResponseError, web};
@@ -48,9 +49,13 @@ pub enum LoginError {
 
 impl ResponseError for LoginError {
     fn status_code(&self) -> StatusCode {
-        match self {
-            LoginError::UnexpectedError(_) => StatusCode::INTERNAL_SERVER_ERROR,
-            LoginError::AuthError(_) => StatusCode::UNAUTHORIZED,
-        }
+        StatusCode::SEE_OTHER
+    }
+
+    fn error_response(&self) -> HttpResponse<BoxBody> {
+        let encoded_error = urlencoding::Encoded::new(self.to_string());
+        HttpResponse::build(self.status_code())
+            .insert_header((LOCATION, format!("/login?error={encoded_error}")))
+            .finish()
     }
 }
