@@ -31,6 +31,8 @@ fn run(
             .wrap(TracingLogger::default())
             .route("/", web::get().to(routes::home))
             .route("/health_check", web::get().to(routes::health_check))
+            .route("/login", web::get().to(routes::login_form))
+            .route("/login", web::post().to(routes::login))
             .route("/newsletters", web::post().to(routes::publish_newsletter))
             .route("/subscriptions", web::post().to(routes::subscribe))
             .route("/subscriptions/confirm", web::get().to(routes::confirm))
