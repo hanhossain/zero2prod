@@ -17,12 +17,12 @@ jobs:
       - uses: dtolnay/rust-toolchain@stable
       - uses: taiki-e/install-action@v2
         with:
-          tool: sqlx-cli
+          tool: sqlx-cli,nextest
       - run: docker compose up --wait
       - run: sqlx database setup
       - run: cargo sqlx prepare --check -- --all-targets
       - run: cargo build --tests
-      - run: cargo test
+      - run: cargo nextest run
 
   fmt:
     runs-on: ubuntu-latest
