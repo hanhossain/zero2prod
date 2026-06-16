@@ -4,10 +4,11 @@ use zero2prod::startup::Application;
 use zero2prod::telemetry;
 
 #[tokio::main]
-async fn main() -> Result<(), std::io::Error> {
+async fn main() -> anyhow::Result<()> {
     telemetry::get_subscriber("info", std::io::stdout).init();
 
     let configuration = get_configuration().expect("Failed to read configuration.");
-    let application = Application::builder(configuration).build()?;
-    application.run_until_stopped().await
+    let application = Application::builder(configuration).build().await?;
+    application.run_until_stopped().await?;
+    Ok(())
 }

@@ -11,3 +11,4 @@ email_client:
   base_url: http://localhost:8025
   sender_email: sender@example.com
   timeout_milliseconds: 10000
+redis_uri: redis://127.0.0.1:6379

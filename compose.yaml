@@ -25,6 +25,8 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+      redis:
+        condition: service_healthy
     profiles: [ backend ]
   mailpit:
     image: axllent/mailpit
@@ -33,5 +35,15 @@ services:
       - "1025:1025" # smtp
     environment:
       MP_SEND_API_AUTH_ACCEPT_ANY: true
+  redis:
+    image: redis
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: [ 'CMD', 'redis-cli', 'ping' ]
+      interval: 1s
+      timeout: 3s
+      retries: 5
+
 volumes:
   postgres-data:

@@ -89,6 +89,17 @@ impl TestApp {
             .await
             .unwrap()
     }
+
+    pub async fn get_admin_dashboard(&self) -> String {
+        self.api_client
+            .get(format!("{}/admin/dashboard", self.address))
+            .send()
+            .await
+            .expect("Failed to execute request")
+            .text()
+            .await
+            .unwrap()
+    }
 }
 
 pub async fn spawn_app(db_pool: PgPool) -> TestApp {
@@ -106,6 +117,7 @@ pub async fn spawn_app(db_pool: PgPool) -> TestApp {
     let application = Application::builder(configuration.clone())
         .with_pool(db_pool.clone())
         .build()
+        .await
         .expect("Failed to build appplication.");
     let application_port = application.port();
     tokio::spawn(application.run_until_stopped());
