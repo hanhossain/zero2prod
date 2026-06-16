@@ -49,6 +49,7 @@ async fn run(
             .wrap(TracingLogger::default())
             .route("/", web::get().to(routes::home))
             .route("/admin/dashboard", web::get().to(routes::admin_dashboard))
+            .route("/admin/logout", web::post().to(routes::log_out))
             .route(
                 "/admin/password",
                 web::get().to(routes::change_password_form),
