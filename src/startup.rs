@@ -55,13 +55,17 @@ async fn run(
                     .wrap(from_fn(reject_anonymous_users))
                     .route("/dashboard", web::get().to(routes::admin_dashboard))
                     .route("/logout", web::post().to(routes::log_out))
+                    .route(
+                        "/newsletters",
+                        web::get().to(routes::publish_newsletter_form),
+                    )
+                    .route("/newsletters", web::post().to(routes::publish_newsletter))
                     .route("/password", web::get().to(routes::change_password_form))
                     .route("/password", web::post().to(routes::change_password)),
             )
             .route("/health_check", web::get().to(routes::health_check))
             .route("/login", web::get().to(routes::login_form))
             .route("/login", web::post().to(routes::login))
-            .route("/newsletters", web::post().to(routes::publish_newsletter))
             .route("/subscriptions", web::post().to(routes::subscribe))
             .route("/subscriptions/confirm", web::get().to(routes::confirm))
             .app_data(db_pool.clone())
