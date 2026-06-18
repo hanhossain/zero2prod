@@ -4,9 +4,8 @@ use sqlx::PgPool;
 #[sqlx::test]
 async fn health_check_works(pool: PgPool) {
     let app = spawn_app(pool).await;
-    let client = reqwest::Client::new();
-
-    let response = client
+    let response = app
+        .api_client
         .get(format!("{}/health_check", app.address))
         .send()
         .await

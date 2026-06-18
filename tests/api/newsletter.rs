@@ -104,7 +104,9 @@ async fn create_unconfirmed_subscriber(app: &TestApp) -> ConfirmationLinks {
 
 async fn create_confirmed_subscriber(app: &TestApp) {
     let confirmation_link = create_unconfirmed_subscriber(app).await;
-    reqwest::get(confirmation_link.html)
+    app.api_client
+        .get(confirmation_link.html)
+        .send()
         .await
         .unwrap()
         .error_for_status()

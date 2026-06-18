@@ -6,7 +6,10 @@ use wiremock::{Mock, ResponseTemplate};
 #[sqlx::test]
 async fn confirmations_without_token_are_rejected_with_a_400(pool: PgPool) {
     let app = spawn_app(pool).await;
-    let response = reqwest::get(format!("{}/subscriptions/confirm", app.address))
+    let response = app
+        .api_client
+        .get(format!("{}/subscriptions/confirm", app.address))
+        .send()
         .await
         .unwrap();
 
@@ -17,12 +20,15 @@ async fn confirmations_without_token_are_rejected_with_a_400(pool: PgPool) {
 async fn confirmations_without_valid_token_are_unauthorized(pool: PgPool) {
     let app = spawn_app(pool).await;
 
-    let response = reqwest::get(format!(
-        "{}/subscriptions/confirm?subscription_token=invalidtoken",
-        app.address
-    ))
-    .await
-    .unwrap();
+    let response = app
+        .api_client
+        .get(format!(
+            "{}/subscriptions/confirm?subscription_token=invalidtoken",
+            app.address
+        ))
+        .send()
+        .await
+        .unwrap();
 
     assert_eq!(response.status().as_u16(), 401);
 }
@@ -42,7 +48,12 @@ async fn the_link_returned_by_subscribe_returns_a_200_if_called(pool: PgPool) {
     let email_request = &app.email_server.received_requests().await.unwrap()[0];
     let confirmation_links = app.get_confirmation_links(email_request);
 
-    let response = reqwest::get(confirmation_links.html).await.unwrap();
+    let response = app
+        .api_client
+        .get(confirmation_links.html)
+        .send()
+        .await
+        .unwrap();
 
     assert_eq!(response.status().as_u16(), 200);
 }
@@ -62,7 +73,9 @@ async fn clicking_on_the_confirmation_link_confirms_a_subscriber(pool: PgPool) {
     let email_request = &app.email_server.received_requests().await.unwrap()[0];
     let confirmation_links = app.get_confirmation_links(email_request);
 
-    reqwest::get(confirmation_links.html)
+    app.api_client
+        .get(confirmation_links.html)
+        .send()
         .await
         .unwrap()
         .error_for_status()
